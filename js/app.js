@@ -16,8 +16,17 @@
     root.dataset.theme = n; store.set("vx-theme", n);
   });
   function applyLang(l) { root.lang = l; root.dir = l === "fa" ? "rtl" : "ltr"; store.set("vx-lang", l); }
-  $("#langBtn").addEventListener("click", () => applyLang(lang() === "fa" ? "en" : "fa"));
+  const META = {
+    en: { t: "VOLTEX | Computer Services & Telegram Bots", d: "Windows software, computer services and Telegram bots, with support in English and Persian." },
+    fa: { t: "VOLTEX | خدمات رایانه و ربات تلگرام", d: "نرم‌افزار ویندوز، خدمات رایانه و ربات تلگرامی با پشتیبانی فارسی و انگلیسی." },
+  };
+  function setMeta(l) {
+    document.title = META[l].t;
+    const m = document.querySelector('meta[name="description"]'); if (m) m.content = META[l].d;
+  }
+  $("#langBtn").addEventListener("click", () => { applyLang(lang() === "fa" ? "en" : "fa"); setMeta(lang()); });
   applyLang(lang());
+  if (lang() === "fa") setMeta("fa");
   $("#burger").addEventListener("click", () => $("#links").classList.toggle("open"));
   $("#links").addEventListener("click", () => $("#links").classList.remove("open"));
   $("#yr").textContent = new Date().getFullYear();
@@ -30,7 +39,7 @@
     return e;
   }
   function bi(parent, obj) {
-    ["en", "fa"].forEach((l) => parent.appendChild(el("span", l, (obj && obj[l]) || "")));
+    ["en", "fa"].forEach((l) => { const sp = el("span", l, (obj && obj[l]) || ""); sp.lang = l; parent.appendChild(sp); });
     return parent;
   }
   function link(cls, href, label) {
@@ -72,9 +81,10 @@
   const PLAY_SVG = '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
 
   /* render content */
+  ["#aboutText", "#statsRow", "#stepsList", "#faqList", "#contactList"].forEach((id) => ($(id).textContent = ""));
   const about = $("#aboutText");
   ["en", "fa"].forEach((l) => {
-    String((C.about && C.about[l]) || "").split(/\n+/).forEach((para) => about.appendChild(el("p", l, para)));
+    String((C.about && C.about[l]) || "").split(/\n+/).forEach((para) => { const pp = el("p", l, para); pp.lang = l; about.appendChild(pp); });
   });
 
   function showcase(it) {
